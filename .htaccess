@@ -1,0 +1,12 @@
+php_value display_errors On
+php_value mbstring.http_input auto
+php_value date.timezone Europe/Lisbon
+php_flag display_startup_errors on
+php_flag display_errors on
+
+RewriteEngine on
+
+RewriteRule ^(index|contact|registration|login)$ $1.php [NC,L]
+RewriteRule ^post/(\d+)$ post.php?p_id=$1 [NC,L]
+RewriteRule ^category/(\d+)$ category.php?category=$1 [NC,L]
+RewriteRule ^author_posts/(\d+)$ author_posts.php?author=$1 [NC,L]
