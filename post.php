@@ -4,6 +4,42 @@
     <!-- Navigation -->
     <?php include "includes/navigation.php";?>
 
+    <?php
+        if(isset($_POST['liked'])){
+            $post_id = $_POST['post_id'];
+            $user_id = $_POST['user_id'];
+
+            $searchPostQuery = "SELECT * FROM posts WHERE post_id=$post_id";
+            $postResult =  mysqli_query($connection, $searchPostQuery);
+            $post = mysqli_fetch_array($postResult);
+            $likes = $post['likes'];
+
+            if(mysqli_num_rows($postResult) >= 1){
+                echo $post['post_id'];
+            }
+
+            mysqli_query($connection, "UPDATE posts SET likes=$likes+1 WHERE post_ID=$post_id");
+
+            mysqli_query($connection, "INSERT INTO likes(user_id, post_id) VALUES ($user_id, $post_id)");
+            exit();
+        }
+
+        if(isset($_POST['unliked'])){
+            $post_id = $_POST['post_id'];
+            $user_id = $_POST['user_id'];
+
+            $searchPostQuery = "SELECT * FROM posts WHERE post_id=$post_id";
+            $postResult =  mysqli_query($connection, $searchPostQuery);
+            $post = mysqli_fetch_array($postResult);
+            $likes = $post['likes'];
+
+            mysqli_query($connection, "UPDATE posts SET likes=$likes-1 WHERE post_id=$post_id");
+
+            mysqli_query($connection, "DELETE FROM likes WHERE user_id=$user_id AND post_id=$post_id");
+            exit();
+        }
+    ?>
+
     <!-- Page Content -->
     <div class="container">
 
@@ -74,7 +110,34 @@
                                 <hr>
                                 <p><?php echo $post_content;?></p>
                                 <hr>
-                                
+
+                                <?php
+                                    if(isLoggedIn()){?>
+                                        <div class="row">
+                                            <p class="pull-right"><a 
+                                            class="<?php echo userLikedThisPost($p_id) ? 'unlike' : 'like'; ?>" 
+                                            href=""
+                                            data-toggle="tooltip" 
+                                            data-placement="top" 
+                                            title="<?php echo userLikedThisPost($p_id) ? 'You liked this before' : 'You want to like it?'; ?>"
+                                            ><span class="<?php echo userLikedThisPost($p_id) ? 'glyphicon glyphicon-thumbs-down' : 'glyphicon glyphicon-thumbs-up'; ?>"></span> <?php echo userLikedThisPost($p_id) ? 'Unlike' : 'Like'; ?>
+                                            </a></p>
+                                        </div>
+                                    <?php
+                                    } else { ?>
+                                        <div class="row">
+                                            <p class="pull-right">You need to <a href="/cms/login.php">login</a> to like</p>
+                                        </div>
+                                    <?php
+                                    }
+                                ?>
+
+                                <div class="row">
+                                    <p class="pull-right">Like: <?php echo getPostLikes($p_id) ?></p>
+                                </div>
+
+                                <div class="clearfix"></div>
+
                                 <?php
                             }
                             ?>
@@ -177,3 +240,36 @@
 
 
 <?php include "includes/footer.php";?>
+
+<script>
+    $(document).ready(function(){
+        var post_id = <?php echo $p_id ?>;
+        var user_id = <?php echo loggedInUserId() ?>;
+
+        $('.like').click(function(){
+            $.ajax({
+                url: "/cms/post.php?p_id=<?php echo $p_id ?>",
+                type: 'post',
+                data: {
+                    liked: 1,
+                    post_id: post_id,
+                    user_id: user_id,
+                }
+            });
+        });
+
+        $('.unlike').click(function(){
+            $.ajax({
+                url: "/cms/post.php?p_id=<?php echo $p_id ?>",
+                type: 'post',
+                data: {
+                    unliked: 1,
+                    post_id: post_id,
+                    user_id: user_id,
+                }
+            });
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>

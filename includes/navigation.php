@@ -65,7 +65,7 @@
                         ?>
                         <li>
                             
-                            <a href="includes/logout.php">Logout</a>
+                            <a href="../includes/logout.php">Logout</a>
                         </li>
                         <?php
                     } else {
