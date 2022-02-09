@@ -151,8 +151,13 @@
                                     $comment_email = mysqli_real_escape_string($connection, $_POST['comment_email']);
                                     $comment_content = mysqli_real_escape_string($connection, $_POST['comment_content']);
                                     if(!empty($comment_author) && !empty($comment_author) && !empty($comment_content)){
-                                        $query = "INSERT INTO comments(comment_post_id, comment_author, comment_email, comment_content, comment_status, comment_date) ";
-                                        $query .= "VALUES ($p_id, '$comment_author', '$comment_email', '$comment_content', 'unapproved', now())";
+                                        if(isLoggedIn()){
+                                            $query = "INSERT INTO comments(comment_post_id, comment_author, comment_author_id, comment_email, comment_content, comment_status, comment_date) ";
+                                            $query .= "VALUES ($p_id, '$comment_author', " . $_SESSION['user_id'] . ", '$comment_email', '$comment_content', 'unapproved', now())";
+                                        } else {
+                                            $query = "INSERT INTO comments(comment_post_id, comment_author, comment_email, comment_content, comment_status, comment_date) ";
+                                            $query .= "VALUES ($p_id, '$comment_author', '$comment_email', '$comment_content', 'unapproved', now())";
+                                        }
                                         $create_comment_query = mysqli_query($connection,$query);
 
                                         if(!$create_comment_query){
@@ -171,11 +176,26 @@
                                 <form role="form" action="" method="post">
                                     <div class="form-group">
                                         <label for="author">Author</label>
-                                        <input class="form-control" name="comment_author" type="text">
+                                        <?php if(isLoggedIn()){ ?>
+                                            <input class="form-control" name="comment_author" type="text" 
+                                            value="<?php if(empty($_SESSION['firstname']) && empty($_SESSION['lastname'])){
+                                                echo $_SESSION['username'];
+                                            } else {
+                                                echo $_SESSION['firstname'] . " " . $_SESSION['lastname'];
+                                            } ?>" readonly>
+                                        <?php } else { ?>
+                                            <input class="form-control" name="comment_author" type="text">
+                                        <?php }?>
                                     </div>
                                     <div class="form-group">
                                         <label for="email">Email</label>
-                                        <input class="form-control" name="comment_email" type="email">
+                                        <?php if(isLoggedIn()){ ?>
+                                            <input class="form-control" name="comment_email" type="email" 
+                                            value="<?php echo $_SESSION['email']; ?>" readonly>
+                                        <?php } else { ?>
+                                            <input class="form-control" name="comment_email" type="email">
+                                        <?php }?>
+                                        
                                     </div>
                                     <div class="form-group">
                                         <label for="comment">Your Comment</label>

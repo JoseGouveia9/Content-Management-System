@@ -22,19 +22,36 @@
                                 $source = '';
                             }
 
-                            switch($source){
-                                case 'add_post': 
-                                    include "includes/add_post.php";
-                                    break;
-                                case 'edit_post': 
-                                    include "includes/edit_post.php";
-                                    break;
-                                case 'filter_posts': 
-                                    include "includes/filter_posts.php";
-                                    break;
-                                default: 
-                                    include "includes/view_all_posts.php";
-                                    break;
+                            if(is_admin()){
+                                switch($source){
+                                    case 'add_post': 
+                                        include "includes/add_post.php";
+                                        break;
+                                    case 'edit_post': 
+                                        include "includes/edit_post.php";
+                                        break;
+                                    case 'filter_posts': 
+                                        include "includes/filter_posts.php";
+                                        break;
+                                    case 'all':   
+                                        include "includes/view_all_posts.php";
+                                        break; 
+                                    default: 
+                                        include "includes/view_my_posts.php";
+                                        break;
+                                } 
+                            } else {
+                                switch($source){
+                                    case 'add_post': 
+                                        include "includes/add_post.php";
+                                        break;
+                                    case 'edit_post': 
+                                        include "includes/edit_post.php";
+                                        break;
+                                    default: 
+                                        include "includes/view_my_posts.php";
+                                        break;
+                                }
                             }
                         ?>
                     </div>

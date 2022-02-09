@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                            Welcome to admin
+                            My Data
                             <small><?php echo $_SESSION['firstname'] . " " . $_SESSION['lastname']; ?></small>
                         </h1>
                     </div>
@@ -21,7 +21,7 @@
                 <!-- /.row -->
                 
                 <div class="row">
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
                                 <div class="row">
@@ -30,13 +30,13 @@
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <?php
-                                            echo "<div class='huge'>" . recordCount('posts') . "</div>"
+                                            echo "<div class='huge'>" . recordCountMyData('post_user','posts') . "</div>"
                                         ?>
                                         <div>Posts</div>
                                     </div>
                                 </div>
                             </div>
-                            <a href="posts.php">
+                            <a href="posts.php?source=my_posts">
                                 <div class="panel-footer">
                                     <span class="pull-left">View Details</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -45,7 +45,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="panel panel-green">
                             <div class="panel-heading">
                                 <div class="row">
@@ -54,62 +54,13 @@
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <?php
-                                            echo "<div class='huge'>" . recordCount('comments') . "</div>"
+                                            echo "<div class='huge'>" . recordCountMyData('comment_author_id','comments') . "</div>"
                                         ?>
                                     <div>Comments</div>
                                     </div>
                                 </div>
                             </div>
-                            <a href="comments.php">
-                                <div class="panel-footer">
-                                    <span class="pull-left">View Details</span>
-                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-yellow">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-user fa-5x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <?php
-                                            echo "<div class='huge'>" . recordCount('users') . "</div>"
-                                        ?>
-                                        <div> Users</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="users.php">
-                                <div class="panel-footer">
-                                    <span class="pull-left">View Details</span>
-                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-red">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-list fa-5x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <?php
-                                            $category_count = recordCount('categories');
-                                            echo "<div class='huge'>" . $category_count . "</div>"
-                                        ?>
-                                        <div>Categories</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="categories.php">
+                            <a href="comments.php?source=my_comments">
                                 <div class="panel-footer">
                                     <span class="pull-left">View Details</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -122,17 +73,9 @@
                 <!-- /.row -->
 
                 <?php
-                    $post_published_count = checkStatus('posts', 'post_status', 'published');
+                    $post_published_count = checkStatusMyData('posts', 'post_status', 'published', 'post_user');
 
-                    $post_draft_count = checkStatus('posts', 'post_status', 'draft');
-
-                    $approved_comment_count = checkStatus('comments', 'comment_status', 'approved');
-
-                    $unapproved_comment_count = checkStatus('comments', 'comment_status', 'unapproved');
-
-                    $admin_count = checkUserRole('users', 'user_role', 'admin');
-
-                    $subcriber_count = checkUserRole('users', 'user_role', 'subscriber');
+                    $post_draft_count = checkStatusMyData('posts', 'post_status', 'draft', 'post_user');
                 ?>
 
                 <div class="row">
@@ -145,10 +88,10 @@
                         var data = google.visualization.arrayToDataTable([
                         ['', 'Count'],
                         <?php
-                            $elements_text = ['Published Posts', 'Draft Posts', 'Approved Comments', 'Unapproved Comments', 'Admins', 'Subscribers', 'Categories'];
-                            $elements_count = [$post_published_count, $post_draft_count, $approved_comment_count, $unapproved_comment_count, $admin_count, $subcriber_count, $category_count];
+                            $elements_text = ['Published Posts', 'Draft Posts'];
+                            $elements_count = [$post_published_count, $post_draft_count];
 
-                            for($i = 0; $i < 7; $i++){
+                            for($i = 0; $i < 2; $i++){
                                 echo "['{$elements_text[$i]}',{$elements_count[$i]}],";
                             }
                         ?>

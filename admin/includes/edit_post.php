@@ -89,60 +89,68 @@
         ?>
         </select>
     </div>
-    <div class="form-group">
+    <?php if(!is_admin()){ ?>
+        <input type="hidden" class="form-control" name="post_user" value="<?php echo $_SESSION['user_id'];?>">
+    <?php } else { ?>
+        <div class="form-group">
         <label for="post_user">Post Author</label>
-        <select class="form-control" name="post_user" id="post_user">
-        <?php
-                $query = "SELECT * FROM users";
-                $select_users = mysqli_query($connection, $query);
-                confirmQuery($select_users);
+            <select class="form-control" name="post_user" id="post_user">
+            <?php
+                    $query = "SELECT * FROM users";
+                    $select_users = mysqli_query($connection, $query);
+                    confirmQuery($select_users);
 
-                while($row = mysqli_fetch_assoc($select_users)){
-                    $user_id = $row['user_id'];
-                    $username = $row['username'];
-                    $user_firstname = $row['user_firstname'];
-                    $user_lastname = $row['user_lastname'];
-                    if($post_user == $user_id){
-                        ?>
-                            <option value='<?php echo $user_id;?>' selected>
-                            <?php
-                                echo $username;
-                                if(!empty($user_firstname) && !empty($user_lastname)){
-                                    echo " - " . $user_firstname . " " . $user_lastname;
-                                }
+                    while($row = mysqli_fetch_assoc($select_users)){
+                        $user_id = $row['user_id'];
+                        $username = $row['username'];
+                        $user_firstname = $row['user_firstname'];
+                        $user_lastname = $row['user_lastname'];
+                        if($post_user == $user_id){
                             ?>
-                            </option>
-                        <?php
-                    } else {
-                        ?>
-                            <option value='<?php echo $user_id;?>'>
+                                <option value='<?php echo $user_id;?>' selected>
+                                <?php
+                                    echo $username;
+                                    if(!empty($user_firstname) && !empty($user_lastname)){
+                                        echo " - " . $user_firstname . " " . $user_lastname;
+                                    }
+                                ?>
+                                </option>
                             <?php
-                                echo $username;
-                                if(!empty($user_firstname) && !empty($user_lastname)){
-                                    echo " - " . $user_firstname . " " . $user_lastname;
-                                }
+                        } else {
                             ?>
-                            </option>
-                        <?php
+                                <option value='<?php echo $user_id;?>'>
+                                <?php
+                                    echo $username;
+                                    if(!empty($user_firstname) && !empty($user_lastname)){
+                                        echo " - " . $user_firstname . " " . $user_lastname;
+                                    }
+                                ?>
+                                </option>
+                            <?php
+                        }
                     }
-                }
-        ?>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="post_status">Post Status</label><br>
-        <select class="form-control" name="post_status" id="post_status">
-            <?php 
-                if($post_status == "published"){
-                    echo "<option value='published' selected>Published</option>";
-                    echo "<option value='draft'>Draft</option>";
-                } else {
-                    echo "<option value='published'>Published</option>";
-                    echo "<option value='draft' selected>Draft</option>";
-                }
             ?>
-        </select>
-    </div>
+            </select>
+        </div>
+    <?php } ?>
+    <?php if(is_admin()) { ?>
+        <div class="form-group">
+            <label for="post_status">Post Status</label><br>
+            <select class="form-control" name="post_status" id="post_status">
+                <?php 
+                    if($post_status == "published"){
+                        echo "<option value='published' selected>Published</option>";
+                        echo "<option value='draft'>Draft</option>";
+                    } else {
+                        echo "<option value='published'>Published</option>";
+                        echo "<option value='draft' selected>Draft</option>";
+                    }
+                ?>
+            </select>
+        </div>
+    <?php } else { ?>
+        <input value="<?php echo $post_status; ?>" type="hidden" class="form-control" name="post_status">
+    <?php } ?>
     <div class="form-group">
         <label for="post_image">Post Image</label><br>
         <img width="100px" src="../images/<?php if(isset($post_image)){echo $post_image;} ?>" alt="">
@@ -160,7 +168,9 @@
     <div class="form-group">
         <label for="post_views_count">Views:</label>
         <span><?php echo $post_views_count; ?></span>
-        <input class="btn btn-primary" type="submit" name="reset_views" value="Reset Views">
+        <?php if(is_admin()) { ?>
+            <input class="btn btn-primary" type="submit" name="reset_views" value="Reset Views">
+        <?php } ?>
     </div>
    
     <div class="form-group">

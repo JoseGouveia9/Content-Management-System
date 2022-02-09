@@ -55,17 +55,13 @@
                                 </li>
                             <?php
                         }
-                        if(is_admin($_SESSION['username'])){
-                            ?>
-                            <li>
-                                <a href="/cms/admin">Admin</a>
-                            </li>
-                            <?php
-                        }
                         ?>
                         <li>
+                            <a href="/cms/admin">Dashboard</a>
+                        </li>
+                        <li>
                             
-                            <a href="../includes/logout.php">Logout</a>
+                            <a href="/cms/includes/logout.php">Logout</a>
                         </li>
                         <?php
                     } else {

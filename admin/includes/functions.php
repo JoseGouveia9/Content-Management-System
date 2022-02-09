@@ -1,7 +1,9 @@
 <?php
     function query($query){
-        global $connection;
-        return mysqli_query($connection, $query);
+        global $connection; 
+        $result = mysqli_query($connection, $query);
+        confirmQuery($result);
+        return $result;
     }
 
     function imagePlaceholder($image=''){
@@ -27,8 +29,7 @@
 
     function loggedInUserId(){
         if(isLoggedIn()){
-            $result= query("SELECT * FROM users WHERE username='" . $_SESSION['username'] . "'");
-            confirmQuery($result);
+            $result = query("SELECT * FROM users WHERE username='" . $_SESSION['username'] . "'");
             $user = mysqli_fetch_array($result);
             return mysqli_num_rows($result) >= 1 ? $user['user_id'] : false;
         }
@@ -36,13 +37,11 @@
 
     function userLikedThisPost($post_id = ''){
         $result = query("SELECT * FROM likes WHERE user_id=". loggedInUserId() ." AND post_id=$post_id");
-        confirmQuery($result);
         return mysqli_num_rows($result) >= 1 ? true : false;
     }
 
     function getPostLikes($post_id){
         $result = query("SELECT * FROM posts WHERE post_id=$post_id");
-        confirmQuery($result);
         $post = mysqli_fetch_array($result);
         return $post['likes'];
     }
@@ -60,15 +59,14 @@
         $username = escape(trim($username));
         $password = escape(trim($password));
 
-        $query = "SELECT * FROM users WHERE username = '$username'";
-        $select_user_query = mysqli_query($connection, $query);
-        confirmQuery($select_user_query);
+        $select_user_query = query("SELECT * FROM users WHERE username = '$username'");
         while($row = mysqli_fetch_assoc($select_user_query)){
             $db_user_id = $row['user_id'];
             $db_username = $row['username'];
             $db_user_password = $row['user_password'];
             $db_user_firstname = $row['user_firstname'];
             $db_user_lastname = $row['user_lastname'];
+            $db_user_email = $row['user_email'];
             $db_user_role = $row['user_role'];
 
             //$password = crypt($password, $db_user_password);
@@ -78,6 +76,7 @@
                 $_SESSION['username'] = $db_username;
                 $_SESSION['firstname'] = $db_user_firstname;
                 $_SESSION['lastname'] = $db_user_lastname;
+                $_SESSION['email'] = $db_user_email;
                 $_SESSION['user_role'] = $db_user_role;
                 redirect('/cms/admin');
             } else {
@@ -107,8 +106,7 @@
 
         $query =  "INSERT INTO users(username, user_password, user_email, user_role) ";
         $query .= "VALUES ('$username', '$password', '$email', 'subscriber')";
-        $create_user = mysqli_query($connection, $query);
-        confirmQuery($create_user);
+        $create_user = query($query);
     }
 
     function redirect($location){
@@ -119,9 +117,7 @@
     function email_exists($email){
         global $connection;
         
-        $query = "SELECT user_email FROM users WHERE user_email = '$email'";
-        $result = mysqli_query($connection, $query);
-        confirmQuery($result);
+        $result = query("SELECT user_email FROM users WHERE user_email = '$email'");
 
         if(mysqli_num_rows($result) > 0){
             return true;
@@ -133,9 +129,7 @@
     function username_exists($username){
         global $connection;
         
-        $query = "SELECT username FROM users WHERE username = '$username'";
-        $result = mysqli_query($connection, $query);
-        confirmQuery($result);
+        $result = query("SELECT username FROM users WHERE username = '$username'");
 
         if(mysqli_num_rows($result) > 0){
             return true;
@@ -144,30 +138,29 @@
         }
     }
 
-    function is_admin($username){
+    function is_admin(){
         global $connection;
 
-        $query = "SELECT user_role FROM users WHERE username = '$username'";
-        $result = mysqli_query($connection, $query);
-        confirmQuery($result);
-
-        $row = mysqli_fetch_assoc($result);
-
-        if(!isset($row['user_role'])){
-            return false;
-        } else if($row['user_role'] == 'admin'){
-            return true;
-        } else {
-            return false;
+        if(isLoggedIn()){
+            $result = query("SELECT user_role FROM users WHERE user_id = ".$_SESSION['user_id']."");
+            confirmQuery($result);
+    
+            $row = mysqli_fetch_assoc($result);
+    
+            if(!isset($row['user_role'])){
+                return false;
+            } else if($row['user_role'] == 'admin'){
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     function checkUserRole($table, $column, $status){
         global $connection;
 
-        $query = "SELECT * FROM $table WHERE $column = '$status'";
-        $select_all = mysqli_query($connection, $query);
-        confirmQuery($select_all);
+        $select_all = query("SELECT * FROM $table WHERE $column = '$status'");
         $count = mysqli_num_rows($select_all);
         return $count;
     }
@@ -175,19 +168,29 @@
     function checkStatus($table, $column, $status){
         global $connection;
 
-        $query = "SELECT * FROM $table WHERE $column = '$status'";
-        $select_all = mysqli_query($connection, $query);
-        confirmQuery($select_all);
+        $select_all = query("SELECT * FROM $table WHERE $column = '$status'");
+        $count = mysqli_num_rows($select_all);
+        return $count;
+    }
+
+    function checkStatusMyData($table, $column, $status, $columnUserId){
+        global $connection;
+
+        $select_all = query("SELECT * FROM $table WHERE $column = '$status' AND $columnUserId = '" . $_SESSION['user_id'] . "'");
         $count = mysqli_num_rows($select_all);
         return $count;
     }
 
     function recordCount($table){
         global $connection;
+        $select_all = query("SELECT * FROM $table");
+        $count = mysqli_num_rows($select_all);
+        return $count;
+    }
 
-        $query = "SELECT * FROM $table";
-        $select_all = mysqli_query($connection, $query);
-        confirmQuery($select_all);
+    function recordCountMyData($column, $table){
+        global $connection;
+        $select_all = query("SELECT * FROM $table WHERE $column = '" . $_SESSION['user_id'] . "'");
         $count = mysqli_num_rows($select_all);
         return $count;
     }
@@ -204,7 +207,7 @@
         $time_out_in_seconds = 10;
         $time_out = $time + $time_out_in_seconds;
 
-        $query = "SELECT * FROM users_online WHERE session = '$session'";
+        $result = query("SELECT * FROM users_online WHERE session = '$session'";
         $send_query = mysqli_query($connection, $query);
         confirmQuery($send_query);
         $count = mysqli_num_rows($send_query);
@@ -234,9 +237,7 @@
                 $time_out_in_seconds = 10;
                 $time_out = $time - $time_out_in_seconds;
     
-                $query = "SELECT * FROM users_online WHERE session = '$session'";
-                $send_query = mysqli_query($connection, $query);
-                confirmQuery($send_query);
+                $send_query = query("SELECT * FROM users_online WHERE session = '$session'");
                 $count = mysqli_num_rows($send_query);
     
                 if($count == NULL){
@@ -261,7 +262,7 @@
         // $time_out_in_seconds = 10;
         // $time_out = $time - $time_out_in_seconds;
 
-        // $query = "SELECT * FROM users_online WHERE session = '$session'";
+        // $result = query("SELECT * FROM users_online WHERE session = '$session'";
         // $send_query = mysqli_query($connection, $query);
         // confirmQuery($send_query);
         // $count = mysqli_num_rows($send_query);
@@ -285,9 +286,7 @@
             global $connection;
             $post_id = $_GET['reset'];
 
-            $query = "UPDATE posts SET post_views_count = 0 WHERE post_id = '{$post_id}'";
-            $reset_views_count = mysqli_query($connection, $query);
-            confirmQuery($reset_views_count);
+            $reset_views_count = query("UPDATE posts SET post_views_count = 0 WHERE post_id = '{$post_id}'");
 
             header("Location: posts.php");
         }
@@ -299,9 +298,7 @@
             global $connection;
             $id = $_GET['change_to_admin'];
 
-            $query = "UPDATE users SET user_role = 'admin' WHERE user_id = $id";
-            $change_to_query = mysqli_query($connection, $query);
-            confirmQuery($change_to_query);
+            $change_to_query = query("UPDATE users SET user_role = 'admin' WHERE user_id = $id");
 
             header("Location: users.php");
         }
@@ -309,9 +306,7 @@
             global $connection;
             $id = $_GET['change_to_subscriber'];
 
-            $query = "UPDATE users SET user_role = 'subscriber' WHERE user_id = $id";
-            $change_to_query = mysqli_query($connection, $query);
-            confirmQuery($change_to_query);
+            $change_to_query = query("UPDATE users SET user_role = 'subscriber' WHERE user_id = $id");
 
             header("Location: users.php");
         }
@@ -325,9 +320,7 @@
                     global $connection;
                     $id = escape($_GET['delete']);
         
-                    $query = "DELETE FROM users WHERE user_id = $id";
-                    $delete_query = mysqli_query($connection, $query);
-                    confirmQuery($delete_query);
+                    $delete_query = query("DELETE FROM users WHERE user_id = $id");
         
                     header("Location: users.php");
                 }
@@ -340,9 +333,7 @@
             global $connection;
             $id = escape($_GET['approve']);
 
-            $query = "UPDATE comments SET comment_status = 'approved' WHERE comment_id = $id";
-            $approve_comment_query = mysqli_query($connection, $query);
-            confirmQuery($approve_comment_query);
+            $approve_comment_query = query("UPDATE comments SET comment_status = 'approved' WHERE comment_id = $id");
 
             if(isset($_GET['p_id'])){
                 $post_id = $_GET['p_id'];
@@ -358,9 +349,7 @@
             global $connection;
             $id = escape($_GET['unapprove']);
 
-            $query = "UPDATE comments SET comment_status = 'unapproved' WHERE comment_id = $id";
-            $unapprove_comment_query = mysqli_query($connection, $query);
-            confirmQuery($unapprove_comment_query);
+            $unapprove_comment_query = query("UPDATE comments SET comment_status = 'unapproved' WHERE comment_id = $id");
 
             if(isset($_GET['p_id'])){
                 $post_id = $_GET['p_id'];
@@ -376,9 +365,7 @@
             global $connection;
             $id = escape($_GET['delete']);
 
-            $query = "DELETE FROM comments WHERE comment_id = $id";
-            $delete_query = mysqli_query($connection, $query);
-            confirmQuery($delete_query);
+            $delete_query = query("DELETE FROM comments WHERE comment_id = $id");
 
             if(isset($_GET['p_id'])){
                 $post_id = $_GET['p_id'];
@@ -394,10 +381,7 @@
             global $connection;
             $id = escape($_POST['post_id']);
 
-            $query = "DELETE FROM posts WHERE post_id = $id";
-            $delete_query = mysqli_query($connection, $query);
-
-            confirmQuery($delete_query);
+            $delete_query = query("DELETE FROM posts WHERE post_id = $id");
 
             header("Location: posts.php");
         }
@@ -426,7 +410,7 @@
                 mysqli_stmt_close($stmt);
 
 
-                // $query = "INSERT INTO categories(cat_title)";
+                // $result = query("INSERT INTO categories(cat_title)";
                 // $query .= " VALUES ('$cat_title')";
                 // $create_category_query = mysqli_query($connection,$query);
                 
@@ -444,8 +428,7 @@
     function findAllCategories(){
         //Find all categories
         global $connection;
-        $query = "SELECT * FROM categories";
-        $select_all_categories_query = mysqli_query($connection, $query);
+        $select_all_categories_query = query("SELECT * FROM categories");
 
         while($row = mysqli_fetch_assoc($select_all_categories_query)){
             $cat_id = $row['cat_id'];
@@ -479,8 +462,7 @@
         global $connection;
         if(isset($_GET['delete'])){
             $the_cat_id = escape($_GET['delete']);
-            $query = "DELETE FROM categories WHERE cat_id = $the_cat_id";
-            $delete_query = mysqli_query($connection, $query);
+            $delete_query = query("DELETE FROM categories WHERE cat_id = $the_cat_id");
             if(!$delete_query){
                 die("Query failed" . mysqli_error($connection));
             } else {

@@ -13,10 +13,37 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                            Comments
+                        Comments
                         </h1>
                         <?php
-                            include "includes/view_all_comments.php";
+                            if(isset($_GET['source'])){
+                                $source = $_GET['source'];
+                            } else {
+                                $source = '';
+                            }
+
+                            /*switch($source){
+                                case 'my_comments': 
+                                    include "includes/view_my_comments.php";
+                                    break;
+                                default: 
+                                    include "includes/view_all_comments.php";
+                                    break;
+                            }*/
+
+                            if(is_admin()){
+                                switch($source){
+                                    case 'all': 
+                                        include "includes/view_all_comments.php";
+                                        break;
+                                    default: 
+                                        include "includes/view_my_comments.php";
+                                        break;
+                                }
+                            }
+                            else {
+                                include "includes/view_my_comments.php";
+                            }
                         ?>
                     </div>
                 </div>

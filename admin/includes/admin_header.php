@@ -1,17 +1,6 @@
 <?php ob_start(); ?>
 <?php session_start();?>
-<?php
-    if(isset($_SESSION['user_role'])){
-        if($_SESSION['user_role'] == 'subscriber'){
-            header("Location: ../index.php");
-        }
-    } else {
-        header("Location: ../index.php");
-        //Podemos colocar o die() para parar o script
-        //Em vez de colocar outro autenticador nas funçoes
-        //die();
-    }
-?>
+
 <?php include "../includes/db.php"; ?>
 <?php include "functions.php"; ?>
 
