@@ -339,7 +339,7 @@
                 $post_id = $_GET['p_id'];
                 header("Location: post_comments.php?id=$post_id");
             } else {
-                header("Location: comments.php");
+                header("Location: comments.php?source=all");
             }
         }
     }
@@ -355,7 +355,7 @@
                 $post_id = $_GET['p_id'];
                 header("Location: post_comments.php?id=$post_id");
             } else {
-                header("Location: comments.php");
+                header("Location: comments.php?source=all");
             }
         }
     }

@@ -14,7 +14,7 @@
         <!-- <li><a href=""><i class="fa fa-fw fa-users"></i>Users Online: 
         <?php //echo users_online()?>
         </a></li> -->
-        <li><a href="javascript:;"><i class="fa fa-fw fa-users"></i> Users Online: <span class="useronline"></span></a></li>
+        <li><a href="javascript:;"><i class="fa fa-fw fa-users"></i> Users Online: <?php echo users_online(); ?></a></li>
         <li><a href="../index.php"><i class="fa fa-fw fa-home"></i> Home</a></li>
         <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?php echo $_SESSION['firstname'] . " " .  $_SESSION['lastname']; ?> <b class="caret"></b></a>
@@ -118,16 +118,16 @@
                 <a href="javascript:;" data-toggle="collapse" data-target="#comments_dropdown"><i class="fa fa-fw fa-comments"></i> Comments <i class="fa fa-fw fa-caret-down"></i></a>
                 <ul id="comments_dropdown" class='<?php echo $comments_dropdown; ?>'>
                     <li>
-                        <a href="./comments.php">View All Comments</a>
+                        <a href="./comments.php?source=all">View All Comments</a>
                     </li>
                     <li>
-                        <a href="./comments.php?source=my_comments">My Comments</a>
+                        <a href="./comments.php">My Comments</a>
                     </li>
                 </ul>
             </li>
             <?php } else { ?>
                 <li class='<?php echo $comments_class; ?>'>
-                <a href="./comments.php?source=my_comments"><i class="fa fa-fw fa-comments"></i> Comments</a>
+                <a href="./comments.php"><i class="fa fa-fw fa-comments"></i> Comments</a>
             </li>
             <?php } ?>
             <?php if(is_admin()){?>

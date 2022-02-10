@@ -57,15 +57,20 @@
                     if(isset($_GET['p_id'])){
                         $p_id = mysqli_real_escape_string($connection, $_GET['p_id']);
 
-                        $query = "UPDATE posts SET post_views_count = post_views_count + 1 WHERE post_id = '{$p_id}'";
-                        $update_views_count = mysqli_query($connection, $query);
+                        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
 
-                        if($_SESSION['user_role'] == 'admin'){
-                            $query = "SELECT * FROM users, posts WHERE post_user = user_id AND post_id = $p_id";
-                        } else {
-                            $query = "SELECT * FROM users, posts WHERE post_user = user_id AND post_id = $p_id AND post_status = 'published'";
+                            $query = "UPDATE posts SET post_views_count = post_views_count + 1 WHERE post_id = '{$p_id}'";
+                            $update_views_count = mysqli_query($connection, $query);
+                        
                         }
-                        $select_all_posts_query = mysqli_query($connection, $query);
+
+                            if($_SESSION['user_role'] == 'admin'){
+                                $query = "SELECT * FROM users, posts WHERE post_user = user_id AND post_id = $p_id";
+                            } else {
+                                $query = "SELECT * FROM users, posts WHERE post_user = user_id AND post_id = $p_id AND post_status = 'published'";
+                            }
+                            $select_all_posts_query = mysqli_query($connection, $query);
+
 
                         
                         if(mysqli_num_rows($select_all_posts_query) == 0){
@@ -145,28 +150,31 @@
                             <!-- Blog Comments -->
 
                             <?php
-                                if(isset($_POST['create_comment'])){
-                                    $p_id = $_GET['p_id'];
-                                    $comment_author = mysqli_real_escape_string($connection, $_POST['comment_author']);
-                                    $comment_email = mysqli_real_escape_string($connection, $_POST['comment_email']);
-                                    $comment_content = mysqli_real_escape_string($connection, $_POST['comment_content']);
-                                    if(!empty($comment_author) && !empty($comment_author) && !empty($comment_content)){
-                                        if(isLoggedIn()){
-                                            $query = "INSERT INTO comments(comment_post_id, comment_author, comment_author_id, comment_email, comment_content, comment_status, comment_date) ";
-                                            $query .= "VALUES ($p_id, '$comment_author', " . $_SESSION['user_id'] . ", '$comment_email', '$comment_content', 'unapproved', now())";
-                                        } else {
-                                            $query = "INSERT INTO comments(comment_post_id, comment_author, comment_email, comment_content, comment_status, comment_date) ";
-                                            $query .= "VALUES ($p_id, '$comment_author', '$comment_email', '$comment_content', 'unapproved', now())";
-                                        }
-                                        $create_comment_query = mysqli_query($connection,$query);
+                                if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
-                                        if(!$create_comment_query){
-                                            die("Query failed" . mysqli_error($connection));
+                                    if(isset($_POST['create_comment'])){
+                                        $p_id = $_GET['p_id'];
+                                        $comment_author = mysqli_real_escape_string($connection, $_POST['comment_author']);
+                                        $comment_email = mysqli_real_escape_string($connection, $_POST['comment_email']);
+                                        $comment_content = mysqli_real_escape_string($connection, $_POST['comment_content']);
+                                        if(!empty($comment_author) && !empty($comment_author) && !empty($comment_content)){
+                                            if(isLoggedIn()){
+                                                $query = "INSERT INTO comments(comment_post_id, comment_author, comment_author_id, comment_email, comment_content, comment_status, comment_date) ";
+                                                $query .= "VALUES ($p_id, '$comment_author', " . $_SESSION['user_id'] . ", '$comment_email', '$comment_content', 'unapproved', now())";
+                                            } else {
+                                                $query = "INSERT INTO comments(comment_post_id, comment_author, comment_email, comment_content, comment_status, comment_date) ";
+                                                $query .= "VALUES ($p_id, '$comment_author', '$comment_email', '$comment_content', 'unapproved', now())";
+                                            }
+                                            $create_comment_query = mysqli_query($connection,$query);
+
+                                            if(!$create_comment_query){
+                                                die("Query failed" . mysqli_error($connection));
+                                            }
+                                            header("Location: /cms/post/$p_id");
+                                        } else {
+                                            echo "<script>alert('Fields cannot be empty');</script>";
                                         }
-                                        header("Location: /cms/post/$p_id");
-                                    } else {
-                                        echo "<script>alert('Fields cannot be empty');</script>";
-                                    }
+                                    } 
                                 }
                             ?>
 
@@ -211,8 +219,8 @@
 
                             <?php
                                 $p_id = mysqli_real_escape_string($connection, $_GET['p_id']);
-                                $query = "SELECT * FROM comments WHERE comment_post_id = $p_id ";
-                                $query .= "AND comment_status = 'approved' ";
+                                $query = "SELECT * FROM comments LEFT JOIN users ON comment_author_id = user_id ";
+                                $query .= "WHERE comment_post_id = $p_id AND comment_status = 'approved' ";
                                 $query .= "ORDER BY comment_id DESC";
                                 $select_all_comments_query = mysqli_query($connection, $query);
 
@@ -222,11 +230,12 @@
                                     while($row = mysqli_fetch_assoc($select_all_comments_query)){
                                         $comment_author = $row['comment_author'];
                                         $comment_content = $row['comment_content'];
-                                        $comment_date = $row['comment_date'];?>
+                                        $comment_date = $row['comment_date'];
+                                        $user_image = $row['user_image'];?>
 
                                         <div class="media">
                                             <a class="pull-left" href="#">
-                                                <img class="media-object" src="http://placehold.it/64x64" alt="">
+                                                <img height="64px" class="media-object" src="<?php if($user_image != ''){echo "/images/".$user_image.""; } else { echo 'http://placehold.it/64x64';}?>" alt="">
                                             </a>
                                             <div class="media-body">
                                                 
