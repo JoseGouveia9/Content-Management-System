@@ -1,7 +1,7 @@
         <!-- Footer -->
         <footer>
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-12" style="color: white;">
                     <p>Copyright &copy; CMS by José Gouveia</p>
                 </div>
                 <!-- /.col-lg-12 -->

@@ -6,8 +6,8 @@
 
     <?php
         if(isset($_POST['liked'])){
-            $post_id = $_POST['post_id'];
-            $user_id = $_POST['user_id'];
+            $post_id = escape($_POST['post_id']);
+            $user_id = escape($_POST['user_id']);
 
             $searchPostQuery = "SELECT * FROM posts WHERE post_id=$post_id";
             $postResult =  mysqli_query($connection, $searchPostQuery);
@@ -25,8 +25,8 @@
         }
 
         if(isset($_POST['unliked'])){
-            $post_id = $_POST['post_id'];
-            $user_id = $_POST['user_id'];
+            $post_id = escape($_POST['post_id']);
+            $user_id = escape($_POST['user_id']);
 
             $searchPostQuery = "SELECT * FROM posts WHERE post_id=$post_id";
             $postResult =  mysqli_query($connection, $searchPostQuery);
@@ -46,12 +46,7 @@
         <div class="row">
 
             <!-- Blog Entries Column -->
-            <div class="col-md-8">
-
-                <!-- <h1 class="page-header">
-                    Page Heading
-                    <small>Secondary Text</small>
-                </h1> -->
+            <div class="col-md-12">
 
                 <?php
                     if(isset($_GET['p_id'])){
@@ -88,10 +83,12 @@
                                 $user_lastname = $row['user_lastname'];
 
                                 ?>
-
-                                <h2>
-                                <?php echo $post_title; ?>
-                                </h2>
+                                <div class="post-header">
+                                        
+                                        <h2>
+                                        <?php echo $post_title; ?>
+                                        </h2>
+                                    </div>
 
                                 <?php
                                     if(!empty($user_firstname) && !empty($user_lastname)){
@@ -146,7 +143,6 @@
                                 <?php
                             }
                             ?>
-
                             <!-- Blog Comments -->
 
                             <?php
@@ -258,9 +254,6 @@
                         ?>
             </div>
 
-
-            <!-- Blog Sidebar Widgets Column -->
-            <?php include "includes/sidebar.php";?>
 
         </div>
         <!-- /.row -->

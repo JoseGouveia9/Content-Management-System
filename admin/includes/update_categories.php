@@ -46,7 +46,7 @@
 <?php
     //Update query
     if(isset($_POST['update_category'])){
-        $the_cat_title = $_POST['cat_title'];
+        $the_cat_title = escape($_POST['cat_title']);
 
         if($the_cat_title == "" || empty($the_cat_title)){
             echo "This field should not be empty";

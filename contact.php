@@ -15,9 +15,9 @@
         $to = "support@josegouveia.epizy.com";
         //$header = "From: " . $_POST['email'];  Não funciona devido ao host
         //https://forum.infinityfree.net/docs?topic=49242
-        $header = $_POST['email'];
-        $subject = wordwrap($_POST['subject'], 70);
-        $body = $_POST['body']; 
+        $header = escape($_POST['email']);
+        $subject = escape(wordwrap($_POST['subject'], 70));
+        $body = escape($_POST['body']); 
 
         if(!empty($header) && !empty($subject) && !empty($body)){
 
@@ -80,24 +80,24 @@
 <section id="login">
     <div class="container">
         <div class="row">
-            <div class="col-xs-6 col-xs-offset-3">
+            <div class="col-xs-6 me-auto ms-auto" style="margin-top: 20px;">
                 <div class="form-wrap">
-                <h1>Contact</h1>
+                <h2 style="color:white; margin-bottom: 30px">Contact</h2>
                     <form role="form" action="contact.php" method="post" id="login-form" autocomplete="off">
                         <h6 class="text-center"><?php echo $message;?></h6>
-                         <div class="form-group">
-                            <label for="email" class="sr-only">Email</label>
+                         <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="email" class="sr-only" style="color:white;">Email</label>
                             <input type="email" name="email" id="email" class="form-control" placeholder="Enter your Email">
                         </div>
-                        <div class="form-group">
-                            <label for="subject" class="sr-only">Subject</label>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="subject" class="sr-only" style="color:white;">Subject</label>
                             <input type="text" name="subject" id="subject" class="form-control" placeholder="Enter your Subject">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 10px;">
                            <textarea class="form-control" name="body" id="body" cols="50" rows="10"></textarea>
                         </div>
                 
-                        <input type="submit" name="submit" id="btn-login" class="btn btn-custom btn-lg btn-block" value="Submit">
+                        <input type="submit" name="submit" id="btn-login" class="btn btn-danger btn-lg btn-block" value="Submit" style="width: 100%;">
                     </form>
                  
                 </div>

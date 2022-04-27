@@ -27,7 +27,7 @@
             if($_POST['password'] === $_POST['confirmPassword']){
 
 
-                $password = $_POST['password'];
+                $password = escape($_POST['password']);
 
                 $hashedPassword = password_hash($password, PASSWORD_BCRYPT, array('cost'=>12));
 

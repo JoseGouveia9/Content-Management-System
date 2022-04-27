@@ -33,15 +33,15 @@
                         </h1>
                         <?php
                             if(isset($_POST['update_profile'])){
-                                $username = $_POST["username"];
-                                $user_password = $_POST["user_password"];
-                                $user_firstname = $_POST["user_firstname"];
-                                $user_lastname = $_POST["user_lastname"];
+                                $username = escape($_POST["username"]);
+                                $user_password = escape($_POST["user_password"]);
+                                $user_firstname = escape($_POST["user_firstname"]);
+                                $user_lastname = escape($_POST["user_lastname"]);
                                 
                                 $user_image = $_FILES["user_image"]["name"];
                                 $user_image_temp = $_FILES["user_image"]["tmp_name"]; //É importante que seja tmp não temp
                                 
-                                $user_email = $_POST["user_email"];
+                                $user_email = escape($_POST["user_email"]);
 
                                 move_uploaded_file($user_image_temp,"../images/$user_image");
 

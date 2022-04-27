@@ -14,6 +14,8 @@
         } else {
             include "includes/languages/en.php";
         }
+    } else {
+        include "includes/languages/en.php";
     }
 
 
@@ -80,40 +82,40 @@
 <section id="login">
     <div class="container">
         <form method="get" class="navbar-form navbar-right" action="" id="language_form">
-            <div class="form-group">
-                <select name="lang" onchange="changeLanguage()">
+            <div class="form-group col-md-2 ms-auto" style="margin-top:20px">
+                <select class="form-select" name="lang" onchange="changeLanguage()">
                     <option value="en" <?php if(isset($_SESSION['lang']) && $_SESSION['lang'] == 'en'){ echo "selected"; }?>>English</option>
                     <option value="pt" <?php if(isset($_SESSION['lang']) && $_SESSION['lang'] == 'pt'){ echo "selected"; }?>>Português</option>
                 </select>
             </div>
         </form>
         <div class="row">
-            <div class="col-xs-6 col-xs-offset-3">
+            <div class="col-xs-6 me-auto ms-auto">
                 <div class="form-wrap">
-                <h1><?php echo _REGISTER ?></h1>
+                <h2 style="color:white; margin-bottom: 30px"><?php echo _REGISTER ?></h2>
                     <form role="form" action="registration.php" method="post" id="login-form" autocomplete="off">
-                        <div class="form-group">
-                            <label for="username" class="sr-only">username</label>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="username" class="sr-only" style="color:white;">Username</label>
                             <input type="text" name="username" id="username" class="form-control" placeholder="<?php echo _USERNAME ?>" 
                             autocomplete="on"
                             value="<?php echo isset($username) ? $username : '' ?>"
                             >
                             <p><?php echo isset($error['username']) ? $error['username'] : '' ?></p>
                         </div>
-                         <div class="form-group">
-                            <label for="email" class="sr-only">Email</label>
+                         <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="email" class="sr-only" style="color:white;">Email</label>
                             <input type="email" name="email" id="email" class="form-control" placeholder="<?php echo _EMAIL ?>"
                             autocomplete="on"
                             value="<?php echo isset($email) ? $email : '' ?>">
                             <p><?php echo isset($error['email']) ? $error['email'] : '' ?></p>
                         </div>
-                         <div class="form-group">
-                            <label for="password" class="sr-only">Password</label>
+                         <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="password" class="sr-only" style="color:white;">Password</label>
                             <input type="password" name="password" id="key" class="form-control" placeholder="<?php echo _PASSWORD ?>">
                             <p><?php echo isset($error['password']) ? $error['password'] : '' ?></p>
                         </div>
                 
-                        <input type="submit" name="register" id="btn-login" class="btn btn-custom btn-lg btn-block" value="Register">
+                        <input type="submit" name="register" id="btn-login" class="btn btn-danger btn-lg btn-block" value="Register" style="width: 100%;">
                     </form>
                  
                 </div>

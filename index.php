@@ -5,17 +5,15 @@
     <?php include "includes/navigation.php";?>
 
     <!-- Page Content -->
-    <div class="container">
+    <div class="container main-container" style="margin-top: 20px;">
 
-        <div class="row">
+        <div class="row" style="padding: 0px 10px;">
+        
+            <!-- Blog Sidebar Widgets Column -->
+            <?php include "includes/sidebar.php";?>
 
             <!-- Blog Entries Column -->
-            <div class="col-md-8">
-
-                <!-- <h1 class="page-header">
-                    Page Heading
-                    <small>Secondary Text</small>
-                </h1> -->
+            <div class="col-md-9 parent">
 
                 <?php
                     if($_SESSION['user_role'] == 'admin'){
@@ -65,79 +63,58 @@
                             $username = $row['username'];
                             $user_firstname = $row['user_firstname'];
                             $user_lastname = $row['user_lastname'];
+                            $user_image = $row['user_image'];
 
                             ?>
-                            <h2>
-                                <a href="post/<?php echo $post_id; ?>"><?php echo $post_title; ?></a>
-                            </h2>
-
-                            <?php
-                                if(!empty($user_firstname) && !empty($user_lastname)){
-                                    ?>
-                                        <p class="lead">
-                                            by <a href="/cms/author_posts/<?php echo $post_user; ?>"><?php echo $user_firstname . " " . $user_lastname; ?></a>
-                                        </p>
-                                    <?php
-                                } else {
-                                    ?>
-                                        <p class="lead">
-                                            by <a href="author_posts.php?author=<?php echo $post_user; ?>"><?php echo $username; ?></a>
-                                        </p>
-                                    <?php
-                                }
-                            ?>
-
-                            <p><span class="glyphicon glyphicon-time"></span> Posted on <?php echo $post_date; ?></p>
-                            <hr>
-                            <a href="post/<?php echo $post_id; ?>"><img class="img-responsive" src="/cms/images/<?php echo $post_image; ?>" alt=""></a>
-                            <hr>
-                            <p><?php echo $post_content;?></p>
-                            <a class="btn btn-primary" href="post/<?php echo $post_id; ?>">Read More <span class="glyphicon glyphicon-chevron-right"></span></a>
-                            <hr>
-                            
+                            <li class="post">
+                                <div class="post-container" >
+                                    <div class="post-header">
+                                        <h2>
+                                            <a href="post/<?php echo $post_id; ?>"><?php echo $post_title; ?></a>
+                                        </h2>
+                                        <p><span class="glyphicon glyphicon-time"></span> Posted on <?php echo $post_date; ?></p>
+                                    </div>
+                                    <div class="details-container">
+                                            <img class="media-object" src="<?php if($user_image != ''){echo "/cms/images/".$user_image.""; } else { echo "/cms/images/profile.png";}?>" alt="">
+                                        <?php
+                                            if(!empty($user_firstname) && !empty($user_lastname)){
+                                                ?>
+                                                    <p class="lead">
+                                                        <a href="/cms/author_posts/<?php echo $post_user; ?>"><?php echo $user_firstname . " " . $user_lastname; ?></a>
+                                                    </p>
+                                                <?php
+                                            } else {
+                                                ?>
+                                                    <p class="lead">
+                                                        <a href="author_posts.php?author=<?php echo $post_user; ?>"><?php echo $username; ?></a>
+                                                    </p>
+                                                <?php
+                                            }
+                                        ?>
+                                    </div>
+                                </div>
+                            </li>
                             <?php
                         }
-                    }
-                ?>
-
-                <!-- First Blog Post -->
-                <!-- <h2>
-                    <a href="#">Blog Post Title</a>
-                </h2>
-                <p class="lead">
-                    by <a href="index.php">Start Bootstrap</a>
-                </p>
-                <p><span class="glyphicon glyphicon-time"></span> Posted on August 28, 2013 at 10:00 PM</p>
-                <hr>
-                <img class="img-responsive" src="http://placehold.it/900x300" alt="">
-                <hr>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
-                <a class="btn btn-primary" href="#">Read More <span class="glyphicon glyphicon-chevron-right"></span></a>
-
-                <hr> -->
-
+                    } ?>
                 
+                <ul class="pagination" style="margin-top:1rem; display: flex; justify-content: center;">
+                    <?php
+                        for($i = 1; $i <= $count; $i++){
+                            if($i == $page){
+                                echo "<li class='page-item active'><p class='page-link'>$i</p></li>";
+                            } else {
+                                echo "<li class='page-item'><a class='page-link' href='index.php?page=$i'>$i</a></li>";
+                            }
+                        }
+                    ?>
+                </ul>
 
             </div>
-
-            <!-- Blog Sidebar Widgets Column -->
-            <?php include "includes/sidebar.php";?>
 
         </div>
         <!-- /.row -->
 
         <hr>
-
-        <ul class="pager">
-            <?php
-                for($i = 1; $i <= $count; $i++){
-                    if($i == $page){
-                        echo "<li><a class='active_link' href='index.php?page=$i'>$i</a></li>";
-                    } else {
-                        echo "<li><a href='index.php?page=$i'>$i</a></li>";
-                    }
-                }
-            ?>
-        </ul>
 
 <?php include "includes/footer.php";?>
